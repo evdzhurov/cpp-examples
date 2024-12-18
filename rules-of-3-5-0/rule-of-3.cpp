@@ -6,19 +6,15 @@
 class RuleOfThree
 {
 public:
-    RuleOfThree(const char *s, std::size_t n)
-        : m_cstr(new char[n])
+    RuleOfThree(const char *s, std::size_t n) : m_cstr(new char[n])
     {
         std::memcpy(m_cstr, s, n);
     }
 
     RuleOfThree(const char *s = "") : RuleOfThree(s, strlen(s) + 1) {}
 
-    /// @brief I. Destructor 
-    ~RuleOfThree()
-    {
-        delete[] m_cstr;
-    }
+    /// @brief I. Destructor
+    ~RuleOfThree() { delete[] m_cstr; }
 
     /// @brief II. Copy constructor
     RuleOfThree(const RuleOfThree &other) : RuleOfThree(other.m_cstr) {}
@@ -38,11 +34,8 @@ public:
 
         return *this;
     }
-    
-    operator const char *() const
-    {
-        return m_cstr;
-    }
+
+    operator const char *() const { return m_cstr; }
 
 private:
     char *m_cstr;
