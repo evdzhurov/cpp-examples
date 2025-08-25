@@ -3,19 +3,17 @@
 #include <string>
 
 /// @brief A RAII class that manages a c-style string
-class RuleOfZero
-{
-public:
+class RuleOfZero {
+  public:
     RuleOfZero(const std::string &str) : m_str{str} {}
 
     operator const char *() const { return m_str.c_str(); }
 
-private:
+  private:
     std::string m_str;
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     RuleOfZero o1{"abc"};
     std::cout << o1 << ' ';
     auto o2{o1}; // I. Uses copy constructor

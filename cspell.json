@@ -1,0 +1,13 @@
+{
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "bugprone",
+        "cppcoreguidelines",
+        "spsc" // Single Producer Single Consumer
+    ],
+    "ignoreWords": [],
+    "import": []
+}

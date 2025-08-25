@@ -4,11 +4,9 @@
 #include <utility>
 
 // A RAII class that manages a c-style string
-class RuleOfFive
-{
-public:
-    RuleOfFive(const char *s, std::size_t n) : m_cstr(new char[n])
-    {
+class RuleOfFive {
+  public:
+    RuleOfFive(const char *s, std::size_t n) : m_cstr(new char[n]) {
         std::memcpy(m_cstr, s, n);
     }
 
@@ -22,15 +20,12 @@ public:
 
     /// @brief III. Move constructor
     RuleOfFive(RuleOfFive &&other) noexcept
-        : m_cstr{std::exchange(other.m_cstr, nullptr)}
-    {
-    }
+        : m_cstr{std::exchange(other.m_cstr, nullptr)} {}
 
     /// @brief IV. Copy assignment
     /// @param other
     /// @return
-    RuleOfFive &operator=(const RuleOfFive &other)
-    {
+    RuleOfFive &operator=(const RuleOfFive &other) {
         return *this = RuleOfFive(other); // This triggers move assignment since
                                           // we're assigning from a temporary
     }
@@ -38,8 +33,7 @@ public:
     /// @brief V. Move assignment
     /// @param other
     /// @return
-    RuleOfFive &operator=(RuleOfFive &&other) noexcept
-    {
+    RuleOfFive &operator=(RuleOfFive &&other) noexcept {
         std::swap(m_cstr, other.m_cstr);
         return *this;
     }
@@ -52,12 +46,11 @@ public:
 
     operator const char *() const { return m_cstr; }
 
-private:
+  private:
     char *m_cstr;
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     RuleOfFive o1{"abc"};
     std::cout << o1 << ' ';
     auto o2{o1}; // I. Uses copy constructor

@@ -3,11 +3,9 @@
 #include <iostream>
 
 /// @brief A RAII class that manages a c-style string
-class RuleOfThree
-{
-public:
-    RuleOfThree(const char *s, std::size_t n) : m_cstr(new char[n])
-    {
+class RuleOfThree {
+  public:
+    RuleOfThree(const char *s, std::size_t n) : m_cstr(new char[n]) {
         std::memcpy(m_cstr, s, n);
     }
 
@@ -20,8 +18,7 @@ public:
     RuleOfThree(const RuleOfThree &other) : RuleOfThree(other.m_cstr) {}
 
     /// @brief III. Copy assignment operator
-    RuleOfThree &operator=(const RuleOfThree &other)
-    {
+    RuleOfThree &operator=(const RuleOfThree &other) {
         if (this == &other)
             return *this;
 
@@ -37,12 +34,11 @@ public:
 
     operator const char *() const { return m_cstr; }
 
-private:
+  private:
     char *m_cstr;
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     RuleOfThree o1{"abc"};
     std::cout << o1 << ' ';
     auto o2{o1}; // I. Uses copy constructor
