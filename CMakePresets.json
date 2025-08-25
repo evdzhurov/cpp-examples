@@ -6,11 +6,13 @@
             "displayName": "Clang 20.1.8 x86_64-pc-linux-gnu",
             "description": "Using compilers: C = /usr/bin/clang-20, CXX = /usr/bin/clang++-20",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_C_COMPILER": "/usr/bin/clang-20",
                 "CMAKE_CXX_COMPILER": "/usr/bin/clang++-20",
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             }
         }
     ]

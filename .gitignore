@@ -35,3 +35,7 @@
 BROWSE.VC.*
 build/
 .vscode
+
+# clangd
+.cache/clangd
+compile_commands.json

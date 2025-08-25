@@ -6,5 +6,8 @@ Checks: >
   modernize-*,
   cppcoreguidelines-*,
   -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-braces-around-statements,
   -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-owning-memory,
   -modernize-use-trailing-return-type
