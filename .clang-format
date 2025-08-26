@@ -1,2 +1,4 @@
-BasedOnStyle: LLVM
-IndentWidth: 4
+BasedOnStyle: Microsoft
+AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: true
+PointerAlignment: Left

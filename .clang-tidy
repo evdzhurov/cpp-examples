@@ -5,9 +5,12 @@ Checks: >
   readability-*,
   modernize-*,
   cppcoreguidelines-*,
+  misc-include-cleaner,
+  llvm-include-order,
   -readability-magic-numbers,
   -readability-identifier-length,
   -readability-braces-around-statements,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
   -modernize-use-trailing-return-type
