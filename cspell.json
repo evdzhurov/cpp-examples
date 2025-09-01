@@ -5,8 +5,9 @@
     "dictionaries": [],
     "words": [
         "bugprone",
+        "constexpr",
         "cppcoreguidelines",
-        "spsc" // Single Producer Single Consumer
+        "spsc"
     ],
     "ignoreWords": [],
     "import": []
