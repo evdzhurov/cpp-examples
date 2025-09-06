@@ -7,6 +7,8 @@
         "bugprone",
         "constexpr",
         "cppcoreguidelines",
+        "mdspan",
+        "NOLINTNEXTLINE",
         "spsc"
     ],
     "ignoreWords": [],
