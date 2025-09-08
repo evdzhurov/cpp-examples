@@ -7,9 +7,12 @@
         "bugprone",
         "constexpr",
         "cppcoreguidelines",
+        "libstdc",
         "mdspan",
         "NOLINTNEXTLINE",
-        "spsc"
+        "spsc",
+        "stdlib",
+        "STREQUAL"
     ],
     "ignoreWords": [],
     "import": []
