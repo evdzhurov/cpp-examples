@@ -4,7 +4,7 @@ project(cpp-examples)
 
 add_subdirectory(src/crtp)
 add_subdirectory(src/rules-of-3-5-0)
-add_subdirectory(src/spsc)
+add_subdirectory(src/concurrent)
 add_subdirectory(src/functional)
 add_subdirectory(src/compile-time)
 add_subdirectory(src/stl)

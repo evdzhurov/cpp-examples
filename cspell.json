@@ -7,9 +7,12 @@
         "bugprone",
         "constexpr",
         "cppcoreguidelines",
+        "fexperimental",
+        "libc",
         "libstdc",
         "mdspan",
         "NOLINTNEXTLINE",
+        "osyncstream",
         "spsc",
         "stdlib",
         "STREQUAL"
