@@ -26,3 +26,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(ranges-libstdc++ PRIVATE -stdlib=libstdc++)
     target_link_options(ranges-libstdc++ PRIVATE -stdlib=libstdc++)
 endif()
+
+add_executable(filesystem filesystem.cpp)
+target_compile_features(filesystem PUBLIC cxx_std_23)
