@@ -1,3 +1,4 @@
+#include <atomic>
 #include <future>
 #include <iostream>
 #include <memory>
@@ -13,7 +14,7 @@ template <typename T>
 class SharedResource
 {
 public:
-    void Publish(T&& doc)
+    void Publish(T doc)
     {
         std::lock_guard<std::mutex> lock{small_bottleneck};
         published_doc = std::make_shared<const T>(std::move(doc));
@@ -30,9 +31,32 @@ private:
     std::shared_ptr<const T> published_doc;
 };
 
+// Atomic shared ptr C++20 + libstdc++
+template <typename T>
+class SharedResourceNotReallyLockFree
+{
+public:
+    void Publish(T doc)
+    {
+        auto publish_doc = std::make_shared<const T>(std::move(doc));
+        published_doc.store(std::move(publish_doc), std::memory_order_release);
+    }
+
+    std::shared_ptr<const T> Get() const
+    {
+        return published_doc.load(std::memory_order_acquire);
+    }
+
+private:
+    std::atomic<std::shared_ptr<const T>> published_doc;
+
+    // Not really lock free.
+    // static_assert(std::atomic<std::shared_ptr<T>>::is_always_lock_free);
+};
+
 int main()
 {
-    SharedResource<int> shared_resource;
+    SharedResourceNotReallyLockFree<int> shared_resource;
     const auto MaxVer = 10;
 
     auto producer = std::async([&]() {
