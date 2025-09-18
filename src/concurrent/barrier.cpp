@@ -4,7 +4,6 @@
 #include <format>
 #include <iostream>
 #include <stop_token>
-#include <syncstream>
 #include <thread>
 #include <vector>
 
