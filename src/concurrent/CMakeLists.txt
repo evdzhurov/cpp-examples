@@ -8,6 +8,7 @@ add_executable(counting-sema counting-sema.cpp)
 add_executable(binary-sema binary-sema.cpp)
 add_executable(thread-pool thread-pool.cpp)
 add_executable(signal-handler signal-handler.cpp)
+add_executable(naive-sema naive-sema.cpp)
 
 target_compile_features(spsc-triple-buffer PUBLIC cxx_std_20)
 target_compile_features(publish-shared-ptr PUBLIC cxx_std_20)

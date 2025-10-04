@@ -6,7 +6,7 @@
 
 // binarys_semaphore is counting_semaphore<1>
 // - can work as a mutex but releasing thread may not be the acquiring thread.
-// - can be used to signal/notify a thread multiple times unlike a condition variable.
+// - can be used to signal/notify a thread multiple times unlike a future.
 
 using namespace std::literals;
 
