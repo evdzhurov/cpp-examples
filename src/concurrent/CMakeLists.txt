@@ -20,3 +20,4 @@ target_compile_features(binary-sema PUBLIC cxx_std_20)
 target_compile_features(thread-pool PUBLIC cxx_std_20)
 
 add_subdirectory(data-structures)
+add_subdirectory(algo)
