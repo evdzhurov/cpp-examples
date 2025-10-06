@@ -60,16 +60,8 @@ void ConcurrentQuickSort(Iter first, Iter last)
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2)
-    {
-        std::cout << "specify vector size to sort!\n";
-        return 0;
-    }
-
-    const auto size = std::atoi(argv[1]);
-
     std::srand(1);
-    auto data = std::vector<int>(size);
+    auto data = std::vector<int>(1024);
     std::fill(data.begin(), data.end(), std::rand());
 
     ConcurrentQuickSort(std::begin(data), std::end(data));

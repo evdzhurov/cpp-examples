@@ -99,7 +99,7 @@ int main()
             auto val = Q1.WaitAndPop();
             if (!val)
             {
-                std::osyncstream{std::cout} << tid << " Empty value sentinel!\n";
+                std::osyncstream{std::cout} << tid << " Queue closed!\n";
                 break;
             }
 
