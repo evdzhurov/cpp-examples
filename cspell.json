@@ -15,6 +15,7 @@
         "mdspan",
         "NOLINTNEXTLINE",
         "osyncstream",
+        "pthread",
         "qsort",
         "sema",
         "spsc",
