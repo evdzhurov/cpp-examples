@@ -71,12 +71,6 @@ cleanup:
     return NULL;
 }
 
-static void queue_drain(BQueue* queue)
-{
-    if (!queue)
-        return;
-}
-
 static void queue_destroy(BQueue* queue)
 {
     if (!queue)
@@ -145,12 +139,200 @@ static bool queue_try_pop(BQueue* queue, int* val)
 
 static bool queue_wait_push(BQueue* queue, int val)
 {
-    return false;
+    if (!queue)
+        return false;
+
+    int err = pthread_mutex_lock(&queue->mtx);
+    if (err != 0)
+    {
+        printf("queue_wait_push pthread_mutex_lock err!\n");
+        exit(1);
+    }
+
+    while (queue->size == queue->capacity && !queue->close)
+    {
+        err = pthread_cond_wait(&queue->not_full_cond, &queue->mtx);
+        if (err != 0)
+        {
+            printf("queue_wait_push pthread_cond_wait err!\n");
+            exit(1);
+        }
+    }
+
+    if (queue->close)
+    {
+        err = pthread_mutex_unlock(&queue->mtx);
+        if (err != 0)
+        {
+            printf("queue_wait_push (closed) pthread_mutex_unlock err!\n");
+            exit(1);
+        }
+
+        return false;
+    }
+
+    queue->slots[queue->tail] = val;
+    queue->tail = (queue->tail + 1) % queue->capacity;
+    ++queue->size;
+
+    err = pthread_mutex_unlock(&queue->mtx);
+    if (err != 0)
+    {
+        printf("queue_wait_push pthread_mutex_unlock err!\n");
+        exit(1);
+    }
+
+    err = pthread_cond_signal(&queue->not_empty_cond);
+    if (err != 0)
+    {
+        printf("queue_wait_push pthread_cond_signal err!\n");
+        exit(1);
+    }
+
+    return true;
 }
 
 static bool queue_wait_pop(BQueue* queue, int* val)
 {
-    return false;
+    if (!queue)
+        return false;
+
+    int err = pthread_mutex_lock(&queue->mtx);
+    if (err != 0)
+    {
+        printf("queue_wait_pop pthread_mutex_lock err!\n");
+        exit(1);
+    }
+
+    while (queue->size == 0 && !queue->close)
+    {
+        err = pthread_cond_wait(&queue->not_empty_cond, &queue->mtx);
+        if (err != 0)
+        {
+            printf("queue_wait_pop pthread_cond_wait err!\n");
+            exit(1);
+        }
+    }
+
+    if (queue->size == 0) // Implies queue->close == true
+    {
+        err = pthread_mutex_unlock(&queue->mtx);
+        if (err != 0)
+        {
+            printf("queue_wait_pop (close) pthread_mutex_unlock err!\n");
+            exit(1);
+        }
+        return false;
+    }
+
+    if (val) // Discards the value if val == NULL
+        *val = queue->slots[queue->head];
+
+    queue->head = (queue->head + 1) % queue->capacity;
+    --queue->size;
+
+    err = pthread_mutex_unlock(&queue->mtx);
+    if (err != 0)
+    {
+        printf("queue_wait_pop pthread_mutex_unlock err!\n");
+        exit(1);
+    }
+
+    err = pthread_cond_signal(&queue->not_full_cond);
+    if (err != 0)
+    {
+        printf("queue_wait_pop pthread_cond_signal err!\n");
+        exit(1);
+    }
+
+    return true;
+}
+
+static void queue_close(BQueue* queue)
+{
+    if (!queue)
+        return;
+
+    int err = pthread_mutex_lock(&queue->mtx);
+    if (err != 0)
+    {
+        printf("queue_close pthread_mutex_lock err!\n");
+        exit(1);
+    }
+
+    if (queue->close)
+    {
+        err = pthread_mutex_unlock(&queue->mtx);
+        if (err != 0)
+        {
+            printf("queue_close pthread_mutex_unlock err!\n");
+            exit(1);
+        }
+
+        return;
+    }
+
+    queue->close = true;
+
+    err = pthread_mutex_unlock(&queue->mtx);
+    if (err != 0)
+    {
+        printf("queue_close pthread_mutex_unlock err!\n");
+        exit(1);
+    }
+
+    err = pthread_cond_broadcast(&queue->not_empty_cond);
+    if (err != 0)
+    {
+        printf("queue_close (not_empty_cond) pthread_cond_broadcast err!\n");
+        exit(1);
+    }
+
+    err = pthread_cond_broadcast(&queue->not_full_cond);
+    if (err != 0)
+    {
+        printf("queue_close (not_full_cond) pthread_cond_broadcast err!\n");
+        exit(1);
+    }
+}
+
+static const size_t PROD_COUNT = 1500;
+static const size_t PROD_N = 10;
+static const size_t CONS_N = 5;
+
+void* produce(void* arg)
+{
+    BQueue* queue = arg;
+    if (!queue)
+        return NULL;
+
+    for (size_t i = 0; i < PROD_COUNT; ++i)
+    {
+        if (!queue_wait_push(queue, 1))
+        {
+            return NULL;
+        }
+    }
+
+    return NULL;
+}
+
+void* consume(void* arg)
+{
+    BQueue* queue = arg;
+    if (!queue)
+        return NULL;
+
+    size_t count = 0;
+    for (;;)
+    {
+        int val;
+        if (!queue_wait_pop(queue, &val))
+            break;
+        count += val;
+    }
+
+    return (void*)count;
 }
 
 int main()
@@ -190,9 +372,66 @@ int main()
     queue_print("After push/pop majority of the capacity", q1);
     assert(queue_empty(q1));
 
+    pthread_t prod[PROD_N];
+    pthread_t cons[CONS_N];
+
+    for (size_t i = 0; i < PROD_N; ++i)
+    {
+        int err = pthread_create(&prod[i], NULL, produce, q1);
+        if (err != 0)
+        {
+            printf("pthread_create (producer) err!\n");
+            exit(1);
+        }
+    }
+    for (size_t i = 0; i < CONS_N; ++i)
+    {
+
+        int err = pthread_create(&cons[i], NULL, consume, q1);
+        if (err != 0)
+        {
+            printf("pthread_create (consumer) err!\n");
+            exit(1);
+        }
+    }
+
     // Cleanup
-    queue_drain(q1);
+    printf("Waiting for producers...\n");
+    for (size_t i = 0; i < PROD_N; ++i)
+    {
+        int err = pthread_join(prod[i], NULL);
+        if (err != 0)
+        {
+            printf("pthread_join (producer) err!\n");
+            exit(1);
+        }
+    }
+
+    printf("Closing queue...\n");
+    queue_close(q1);
+
+    printf("Waiting for consumers...\n");
+    size_t total_count = 0;
+    for (size_t i = 0; i < CONS_N; ++i)
+    {
+        void* ret;
+        const int err = pthread_join(cons[i], &ret);
+        if (err != 0)
+        {
+            printf("pthread_create (consumer) err!\n");
+            exit(1);
+        }
+
+        const size_t count = (size_t)ret;
+        total_count += count;
+    }
+
+    printf("Total count expected: %lu\n", (unsigned long)(PROD_COUNT * PROD_N));
+    printf("Total count consumed: %lu\n", (unsigned long)total_count);
+
+    printf("Destroying queue...\n");
     queue_destroy(q1);
 
+    printf("Done.\n");
     return 0;
 }
