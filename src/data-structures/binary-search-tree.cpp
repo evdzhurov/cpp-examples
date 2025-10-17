@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -46,6 +47,20 @@ public:
         {
             ss << node->key << ", ";
             node = SuccNode(node);
+        }
+
+        return ss.str();
+    }
+
+    [[nodiscard]] std::string InOrderPrintReversed() const
+    {
+        std::stringstream ss;
+
+        auto node = MaxNode(root.get());
+        while (node)
+        {
+            ss << node->key << ", ";
+            node = PredNode(node);
         }
 
         return ss.str();
@@ -173,13 +188,31 @@ private:
             return MinNode(node->right.get());
 
         // Find the lowest ancestor of 'node' whose left child is an ancestor of 'node'
-        Node* succ = node->parent;
-        while (succ && node == succ->right.get())
+        Node* ancestor = node->parent;
+        while (ancestor && node == ancestor->right.get()) // we ensure that the node on the left is an ancestor to node
         {
-            node = succ;
-            succ = succ->parent;
+            node = ancestor;
+            ancestor = ancestor->parent;
         }
-        return succ;
+        return ancestor;
+    }
+
+    Node* PredNode(Node* node) const
+    {
+        if (node == nullptr)
+            return node;
+
+        // The predecessor is the next right-most node from the left child
+        if (node->left)
+            return MaxNode(node->left.get());
+
+        Node* ancestor = node->parent;
+        while (ancestor && node == ancestor->left.get())
+        {
+            node = ancestor;
+            ancestor = ancestor->parent;
+        }
+        return ancestor;
     }
 
     friend void swap(BinarySearchTree& left, BinarySearchTree& right) noexcept
@@ -225,6 +258,17 @@ int main()
     BinarySearchTree<int> B5;
     B5 = B4;
     std::cout << "B5: " << B5.InOrderPrint() << '\n';
+
+    BinarySearchTree<int> bst2;
+    bst2.Insert(50);
+    bst2.Insert(100);
+    bst2.Insert(150);
+    bst2.Insert(75);
+    bst2.Insert(25);
+    bst2.Insert(10);
+    bst2.Insert(30);
+
+    std::cout << bst2.InOrderPrintReversed() << '\n';
 
     return 0;
 }
