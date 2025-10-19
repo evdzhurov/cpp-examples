@@ -10,6 +10,7 @@
         "deleters",
         "fexperimental",
         "fsanitize",
+        "Heapify",
         "libc",
         "libstdc",
         "mdspan",

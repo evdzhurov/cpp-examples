@@ -11,3 +11,7 @@ target_link_options(doubly-linked-list   PUBLIC -fsanitize=address,undefined,lea
 add_executable(binary-search-tree binary-search-tree.cpp)
 target_compile_options(binary-search-tree PUBLIC -fsanitize=address,undefined,leak -g -fno-omit-frame-pointer)
 target_link_options(binary-search-tree   PUBLIC -fsanitize=address,undefined,leak)
+
+add_executable(max-heap max-heap.cpp)
+target_compile_options(max-heap PUBLIC -fsanitize=address,undefined,leak -g -fno-omit-frame-pointer)
+target_link_options(max-heap   PUBLIC -fsanitize=address,undefined,leak)
